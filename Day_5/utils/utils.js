@@ -6,6 +6,7 @@ function executeIntCode(input, inputValue) {
   let nextProgramToTest = 0;
   for (let i = 0; i < inputLgt; ) {
     let instruction = input[i].toString();
+    let opCode;
     let instLen = instruction.length;
     let param1;
     let param2;
@@ -13,52 +14,54 @@ function executeIntCode(input, inputValue) {
 
     if (instLen > 2) {
       let wholeInst = input[i].toString();
-      instruction = parseInt(wholeInst[instLen - 1]);
-      //TO DO - rename all opCodes to modes of reading
-      let opCode1 = parseInt(wholeInst[instLen - 3]);
-      let opCode2 = parseInt(wholeInst[instLen - 4] || 0);
-      let opCode3 = parseInt(wholeInst[instLen - 5] || 0);
-      if (opCode1 === 1) {
+      opCode = parseInt(wholeInst[instLen - 1]);
+      let modeParam1 = parseInt(wholeInst[instLen - 3]);
+      let modeParam2 = parseInt(wholeInst[instLen - 4] || 0);
+      let modeParam3 = parseInt(wholeInst[instLen - 5] || 0);
+      if (modeParam1 === 1) {
+        //immediate mode
         param1 = input[i + 1];
       } else {
+        //position mode
         param1 = input[input[i + 1]];
       }
-      if (opCode2 === 1) {
+      if (modeParam2 === 1) {
+        //immediate mode
         param2 = input[i + 2];
       } else {
+        //position mode
         param2 = input[input[i + 2]];
       }
-      param3 = input[i + 3];
-
-      // console.log({ instruction, opCode1, opCode2, opCode3 });
-      // console.log({ param1, param2, param3 });
+      if (modeParam3 === 1) {
+        //immediate mode
+        param3 = input[i + 3];
+      } else {
+        //position mode
+        param3 = input[input[i + 3]];
+      }
     } else {
-      instruction = input[i];
       //by default the params are using position mode
+      opCode = input[i];
       param1 = input[input[i + 1]];
       param2 = input[input[i + 2]];
       param3 = input[input[i + 3]];
     }
-    switch (instruction) {
-      case 1:
-        //addition
+    switch (opCode) {
+      case 1: //addition
         input[input[i + 3]] = param1 + param2;
         i += 4;
         break;
-      case 2:
-        //multiplication
+      case 2: //multiplication
         input[input[i + 3]] = param1 * param2;
         i += 4;
         // console.log("=================> multiplication: ", input[param3]);
         break;
-      case 3:
-        //store input
-        //let userInput = reader.question(`What input do you want to add? `);
+      case 3: //store input
+        //let inputValue = reader.question(`What input do you want to add? `);
         input[input[i + 1]] = inputValue;
         i += 2;
         break;
-      case 4:
-        //output value
+      case 4: //output value
         let output = param1;
         if (output !== 0 && input[i + 2] !== 99) {
           correctInstructions(input, nextProgramToTest, i);
@@ -68,22 +71,21 @@ function executeIntCode(input, inputValue) {
         i += 2;
         nextProgramToTest = i;
         break;
-      case 5:
+      case 5: //jump if true
         if (param1 !== 0) {
           i = param2;
-          //console.log({ param2 });
           break;
         }
         i += 3;
         break;
-      case 6:
+      case 6: //jump if false
         if (param1 === 0) {
           i = param2;
           break;
         }
         i += 3;
         break;
-      case 7:
+      case 7: //less than
         if (param1 < param2) {
           input[input[i + 3]] = 1;
         } else {
@@ -91,7 +93,7 @@ function executeIntCode(input, inputValue) {
         }
         i += 4;
         break;
-      case 8:
+      case 8: //equals
         if (param1 === param2) {
           input[input[i + 3]] = 1;
         } else {
@@ -99,12 +101,9 @@ function executeIntCode(input, inputValue) {
         }
         i += 4;
         break;
-      case 99:
-        //end programme
+      case 99: //end programme
         console.log("=================> programme ended");
         return input;
-      // case other:
-      //   console.log("programme crashed");
     }
   }
 }
