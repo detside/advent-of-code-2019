@@ -1,0 +1,11 @@
+{
+  "name": "day_16",
+  "version": "1.0.0",
+  "description": "Day 16 parts 1 and 2",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Simon de Timary",
+  "license": "ISC"
+}
